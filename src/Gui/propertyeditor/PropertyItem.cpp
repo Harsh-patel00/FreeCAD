@@ -512,6 +512,8 @@ void PropertyItem::setPropertyValue(const QString& value)
 
         ss << parent->getPropertyPrefix() << prop->getName()
            << " = " << value.toUtf8().constData() << '\n';
+
+        ss << "Just Debugging!" << '\n';
     }
 
     std::string cmd = ss.str();
@@ -536,7 +538,8 @@ void PropertyItem::setPropertyValue(const QString& value)
 QVariant PropertyItem::data(int column, int role) const
 {
     // property name
-    if (column == 0) {
+    if (column == 0) 
+    {
         if (role == Qt::BackgroundRole || role == Qt::TextColorRole) {
             if(PropertyView::showAll()
                 && propertyItems.size() == 1
@@ -617,14 +620,16 @@ bool PropertyItem::setData (const QVariant& value)
     // a property and if no property is set for this item
     // it delegates it to its parent which sets then the
     // property or delegates again to its parent...
-    if (propertyItems.empty()) {
+    if (propertyItems.empty()) 
+    {
         PropertyItem* parent = this->parent();
         if (!parent || !parent->parent() || hasAnyExpression())
             return false;
         parent->setProperty(qPrintable(objectName()),value);
         return true;
     }
-    else {
+    else 
+    {
         setValue(value);
         return true;
     }
@@ -692,7 +697,8 @@ QVariant PropertyStringItem::value(const App::Property* prop) const
 
 void PropertyStringItem::setValue(const QVariant& value)
 {
-    if(!hasExpression())  {
+    if(!hasExpression())  
+    {
         if (!value.canConvert(QVariant::String))
             return;
         QString val = value.toString();

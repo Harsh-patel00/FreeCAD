@@ -66,6 +66,8 @@
 #include "PropertyView.h"
 #include <Gui/SpinBox.h>
 
+#include <Quarter/devices/Mouse.h>
+
 using namespace Gui::PropertyEditor;
 using namespace Gui::Dialog;
 
@@ -519,6 +521,7 @@ void PropertyItem::setPropertyValue(const QString& value)
         return;
 
     try {
+        Base::Console().Log( "Just Debugging here!" );
         Gui::Command::runCommand(Gui::Command::App, cmd.c_str());
     }
     catch (Base::PyException &e) {
@@ -532,7 +535,6 @@ void PropertyItem::setPropertyValue(const QString& value)
         Base::Console().Error("Unknown C++ exception in PropertyItem::setPropertyValue thrown\n");
     }
 
-    ss << "Just Debugging!" << '\n';
 }
 
 QVariant PropertyItem::data(int column, int role) const
@@ -1018,8 +1020,14 @@ QWidget* PropertyFloatItem::createEditor(QWidget* parent, const QObject* receive
 void PropertyFloatItem::setEditorData(QWidget *editor, const QVariant& data) const
 {
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
-    sb->setRange((double)INT_MIN, (double)69);
+    sb->setRange((double)INT_MIN, (double)INT_MAX);
     sb->setValue(data.toDouble());
+
+    // Start Sample code by gaggedegg
+
+    sb->stepUp();
+
+    // End Sample code by gaggedegg
 }
 
 QVariant PropertyFloatItem::editorData(QWidget *editor) const

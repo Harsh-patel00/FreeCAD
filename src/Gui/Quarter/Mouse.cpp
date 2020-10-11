@@ -62,37 +62,46 @@
 #include <Quarter/QuarterWidget.h>
 #endif
 
-namespace SIM { namespace Coin3D { namespace Quarter {
+namespace SIM 
+{ 
+    namespace Coin3D 
+    { 
+        namespace Quarter 
+        {
+            class MouseP 
+            {
+            public:
+                MouseP(Mouse * publ) 
+                {
+                this->publ = publ;
+                this->location2 = new SoLocation2Event;
+                this->mousebutton = new SoMouseButtonEvent;
+                this->wheel = new SoMouseWheelEvent;
+                }
 
-class MouseP {
-public:
-  MouseP(Mouse * publ) {
-    this->publ = publ;
-    this->location2 = new SoLocation2Event;
-    this->mousebutton = new SoMouseButtonEvent;
-    this->wheel = new SoMouseWheelEvent;
-  }
+                ~MouseP() 
+                {
+                delete this->location2;
+                delete this->mousebutton;
+                delete this->wheel;
+                }
 
-  ~MouseP() {
-    delete this->location2;
-    delete this->mousebutton;
-    delete this->wheel;
-  }
+                const SoEvent * mouseMoveEvent(QMouseEvent * event);
+                const SoEvent * mouseWheelEvent(QWheelEvent * event);
+                const SoEvent * mouseButtonEvent(QMouseEvent * event);
 
-  const SoEvent * mouseMoveEvent(QMouseEvent * event);
-  const SoEvent * mouseWheelEvent(QWheelEvent * event);
-  const SoEvent * mouseButtonEvent(QMouseEvent * event);
+                void resizeEvent(QResizeEvent * event);
 
-  void resizeEvent(QResizeEvent * event);
+                class SoLocation2Event * location2;
+                class SoMouseButtonEvent * mousebutton;
+                class SoMouseWheelEvent * wheel;
+                SbVec2s windowsize;
+                Mouse * publ;
+            };
 
-  class SoLocation2Event * location2;
-  class SoMouseButtonEvent * mousebutton;
-  class SoMouseWheelEvent * wheel;
-  SbVec2s windowsize;
-  Mouse * publ;
-};
-
-}}} // namespace
+        }
+    }
+} // namespace
 
 using namespace SIM::Coin3D::Quarter;
 

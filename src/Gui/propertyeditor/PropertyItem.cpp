@@ -512,8 +512,6 @@ void PropertyItem::setPropertyValue(const QString& value)
 
         ss << parent->getPropertyPrefix() << prop->getName()
            << " = " << value.toUtf8().constData() << '\n';
-
-        ss << "Just Debugging!" << '\n';
     }
 
     std::string cmd = ss.str();
@@ -533,6 +531,8 @@ void PropertyItem::setPropertyValue(const QString& value)
     catch (...) {
         Base::Console().Error("Unknown C++ exception in PropertyItem::setPropertyValue thrown\n");
     }
+
+    ss << "Just Debugging!" << '\n';
 }
 
 QVariant PropertyItem::data(int column, int role) const
@@ -679,6 +679,8 @@ QString PropertyItem::expressionAsString() const
     return QString();
 }
 
+#pragma region PropertyStringItem
+
 // --------------------------------------------------------------------
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyStringItem)
@@ -733,6 +735,9 @@ QVariant PropertyStringItem::editorData(QWidget *editor) const
     QLineEdit *le = qobject_cast<QLineEdit*>(editor);
     return QVariant(le->text());
 }
+#pragma endregion
+
+#pragma region PropertyFontItem
 
 // --------------------------------------------------------------------
 
@@ -783,7 +788,9 @@ QVariant PropertyFontItem::editorData(QWidget *editor) const
     QComboBox *cb = qobject_cast<QComboBox*>(editor);
     return QVariant(cb->currentText());
 }
+#pragma endregion
 
+#pragma region PropertySeparatorItem
 // --------------------------------------------------------------------
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertySeparatorItem)
@@ -795,6 +802,9 @@ QWidget* PropertySeparatorItem::createEditor(QWidget* parent, const QObject* rec
     Q_UNUSED(method); 
     return 0;
 }
+#pragma endregion
+
+#pragma region PropertyIntegerItem
 
 // --------------------------------------------------------------------
 
@@ -861,7 +871,9 @@ QVariant PropertyIntegerItem::toString(const QVariant& v) const
 
     return QVariant(string);
 }
+#pragma endregion
 
+#pragma region PropertyIntegerConstraintItem
 
 // --------------------------------------------------------------------
 
@@ -944,7 +956,9 @@ QVariant PropertyIntegerConstraintItem::toString(const QVariant& v) const
 
     return QVariant(string);
 }
+#pragma endregion
 
+#pragma region PropertyFloatItem
 
 // --------------------------------------------------------------------
 
@@ -1004,7 +1018,7 @@ QWidget* PropertyFloatItem::createEditor(QWidget* parent, const QObject* receive
 void PropertyFloatItem::setEditorData(QWidget *editor, const QVariant& data) const
 {
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
-    sb->setRange((double)INT_MIN, (double)INT_MAX);
+    sb->setRange((double)INT_MIN, (double)69);
     sb->setValue(data.toDouble());
 }
 
@@ -1014,8 +1028,12 @@ QVariant PropertyFloatItem::editorData(QWidget *editor) const
     return QVariant(sb->value());
 }
 
-// --------------------------------------------------------------------
 
+#pragma endregion
+
+#pragma region PropertyUnitItem
+
+// --------------------------------------------------------------------
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyUnitItem)
 
@@ -1088,6 +1106,10 @@ QVariant PropertyUnitItem::editorData(QWidget *editor) const
     return QVariant::fromValue<Base::Quantity>(value);
 }
 
+#pragma endregion
+
+#pragma region PropertyUnitConstraintItem
+
 // --------------------------------------------------------------------
 
 
@@ -1116,14 +1138,18 @@ void PropertyUnitConstraintItem::setEditorData(QWidget *editor, const QVariant& 
 
     if (c) {
         infield->setMinimum(c->LowerBound);
-        infield->setMaximum(c->UpperBound);
+        infield->setMaximum(79);
         infield->setSingleStep(c->StepSize);
     }
     else {
         infield->setMinimum((double)INT_MIN);
-        infield->setMaximum((double)INT_MAX);
+        infield->setMaximum((double)79);
     }
 }
+
+#pragma endregion
+
+#pragma region PropertyFloatConstraintItem
 
 // --------------------------------------------------------------------
 
@@ -1189,12 +1215,12 @@ void PropertyFloatConstraintItem::setEditorData(QWidget *editor, const QVariant&
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
     if (c) {
         sb->setMinimum(c->LowerBound);
-        sb->setMaximum(c->UpperBound);
+        sb->setMaximum(70);
         sb->setSingleStep(c->StepSize);
     }
     else {
         sb->setMinimum((double)INT_MIN);
-        sb->setMaximum((double)INT_MAX);
+        sb->setMaximum((double)70);
         sb->setSingleStep(0.1);
     }
     sb->setValue(data.toDouble());
@@ -1206,6 +1232,10 @@ QVariant PropertyFloatConstraintItem::editorData(QWidget *editor) const
     return QVariant(sb->value());
 }
 
+#pragma endregion
+
+#pragma region PropertyPrecisionItem
+
 // --------------------------------------------------------------------
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyPrecisionItem)
@@ -1214,6 +1244,10 @@ PropertyPrecisionItem::PropertyPrecisionItem()
 {
     setDecimals(16);
 }
+
+#pragma endregion
+
+#pragma region PropertyAngleItem
 
 // --------------------------------------------------------------------
 
@@ -1232,6 +1266,9 @@ QVariant PropertyAngleItem::toString(const QVariant& prop) const
 {
     return PropertyUnitConstraintItem::toString(prop);
 }
+#pragma endregion
+
+#pragma region PropertyBoolItem
 
 // --------------------------------------------------------------------
 
@@ -1280,40 +1317,52 @@ QVariant PropertyBoolItem::editorData(QWidget *editor) const
     QComboBox *cb = qobject_cast<QComboBox*>(editor);
     return QVariant(cb->currentText());
 }
+#pragma endregion
+
+#pragma region Vectors
 
 // ---------------------------------------------------------------
 
-namespace Gui { namespace PropertyEditor {
-class VectorLineEdit : public Gui::ExpLineEdit
-{
-    int decimals;
-public:
-    VectorLineEdit (int decimals, QWidget * parent=0, bool expressionOnly=false)
-        : Gui::ExpLineEdit(parent, expressionOnly)
-        , decimals(decimals)
+namespace Gui 
+{ 
+    namespace PropertyEditor 
     {
-    }
-
-    bool apply(const std::string &propName) {
-        if (!ExpressionBinding::apply(propName)) {
-            QVariant data = property("coords");
-            if (data.canConvert<Base::Vector3d>()) {
-                const Base::Vector3d& value = data.value<Base::Vector3d>();
-
-                QString str = QString::fromLatin1("(%1, %2, %3)")
-                                .arg(value.x,0,'f',decimals)
-                                .arg(value.y,0,'f',decimals)
-                                .arg(value.z,0,'f',decimals);
-
-                Gui::Command::doCommand(Gui::Command::Doc, "%s = %s", propName.c_str(), str.toLatin1().constData());
-                return true;
+        class VectorLineEdit : public Gui::ExpLineEdit
+        {
+            int decimals;
+        public:
+            // Constructor
+            VectorLineEdit (int decimals, QWidget * parent=0, bool expressionOnly=false)
+                : Gui::ExpLineEdit(parent, expressionOnly)
+                , decimals(decimals)
+            {
             }
-        }
 
-        return false;
+            bool apply(const std::string &propName) 
+            {
+                if (!ExpressionBinding::apply(propName)) 
+                {
+                    QVariant data = property("coords");
+                    if (data.canConvert<Base::Vector3d>()) 
+                    {
+                        const Base::Vector3d& value = data.value<Base::Vector3d>();
+
+                        QString str = QString::fromLatin1("(%1, %2, %3)")
+                                        .arg(value.x,0,'f',decimals)
+                                        .arg(value.y,0,'f',decimals)
+                                        .arg(value.z,0,'f',decimals);
+
+                        Gui::Command::doCommand(Gui::Command::Doc, "%s = %s", propName.c_str(), str.toLatin1().constData());
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
     }
-};
-}}
+}
+
+#pragma region PropertyVectorItem
 
 // ---------------------------------------------------------------
 
@@ -1437,7 +1486,9 @@ void PropertyVectorItem::propertyBound()
     m_y->bind(App::ObjectIdentifier(getPath())<<App::ObjectIdentifier::String("y"));
     m_z->bind(App::ObjectIdentifier(getPath())<<App::ObjectIdentifier::String("z"));
 }
+#pragma endregion
 
+#pragma region VectorListButton
 // ---------------------------------------------------------------
 
 VectorListButton::VectorListButton(int decimals, QWidget * parent)
@@ -1479,6 +1530,9 @@ void VectorListButton::showValue(const QVariant& d)
     }
     getLabel()->setText(data);
 }
+#pragma endregion
+
+#pragma region PropertyVectorListItem
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyVectorListItem)
 
@@ -1553,6 +1607,9 @@ QVariant PropertyVectorListItem::editorData(QWidget *editor) const
     VectorListButton *pe = qobject_cast<VectorListButton*>(editor);
     return pe->value();
 }
+#pragma endregion
+
+#pragma region PropertyVectorDistanceItem
 
 // ---------------------------------------------------------------
 
@@ -1676,10 +1733,23 @@ void PropertyVectorDistanceItem::propertyBound()
         m_z->bind(App::ObjectIdentifier(getPath())<<App::ObjectIdentifier::String("z"));
     };
 }
+#pragma endregion
+
+#pragma endregion
+
+#pragma region PropertyPositionItem
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyPositionItem)
 
+#pragma endregion
+
+#pragma region PropertyDirectionItem
+
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyDirectionItem)
+
+#pragma endregion
+
+#pragma region PropertyMatrixItem
 
 // ---------------------------------------------------------------
 
@@ -2034,6 +2104,9 @@ void PropertyMatrixItem::setA44(double A44)
 {
     setData(QVariant::fromValue(Base::Matrix4D(getA11(),getA12(),getA13(),getA14(),getA21(),getA22(),getA23(),getA24(),getA31(),getA32(),getA33(),getA34(),getA41(),getA42(),getA43(),A44 )));
 }
+#pragma endregion
+
+#pragma region PropertyPlacement
 
 // --------------------------------------------------------------------
 
@@ -2108,6 +2181,8 @@ void PlacementEditor::updateValue(const QVariant& v, bool incr, bool data)
         }
     }
 }
+
+#pragma region PropertyPlacementItem
 
 PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyPlacementItem)
 
@@ -2374,7 +2449,11 @@ void PropertyPlacementItem::propertyBound()
         m_p->bind(App::ObjectIdentifier(getPath())<<App::ObjectIdentifier::String("Base"));
     }
 }
+#pragma endregion
 
+#pragma endregion
+
+#pragma region PropertyEnumItem
 
 // ---------------------------------------------------------------
 
@@ -2461,6 +2540,9 @@ QVariant PropertyEnumItem::editorData(QWidget *editor) const
     QComboBox *cb = qobject_cast<QComboBox*>(editor);
     return QVariant(cb->currentText());
 }
+#pragma endregion
+
+#pragma region PropertyStringListItem
 
 // ---------------------------------------------------------------
 
@@ -2540,6 +2622,9 @@ void PropertyStringListItem::setValue(const QVariant& value)
     str << "]";
     setPropertyValue(data);
 }
+#pragma endregion
+
+#pragma region PropertyFloatListItem
 
 // ---------------------------------------------------------------
 
@@ -2614,6 +2699,9 @@ void PropertyFloatListItem::setValue(const QVariant& value)
         data = QString::fromUtf8("[]");
     setPropertyValue(data);
 }
+#pragma endregion
+
+#pragma region PropertyIntegerListItem
 
 // ---------------------------------------------------------------
 
@@ -2689,6 +2777,9 @@ void PropertyIntegerListItem::setValue(const QVariant& value)
         data = QString::fromUtf8("[]");
     setPropertyValue(data);
 }
+#pragma endregion
+
+#pragma region PropertyColorItem
 
 // --------------------------------------------------------------------
 
@@ -2761,20 +2852,27 @@ QVariant PropertyColorItem::editorData(QWidget *editor) const
     return var;
 }
 
+#pragma endregion
+
+#pragma region PropertyMaterialItem
+
 // --------------------------------------------------------------------
 
-namespace Gui { namespace PropertyEditor {
-    class Material
+namespace Gui 
+{ 
+    namespace PropertyEditor 
     {
-    public:
-        QColor diffuseColor;
-        QColor ambientColor;
-        QColor specularColor;
-        QColor emissiveColor;
-        float shininess;
-        float transparency;
-    };
-}
+        class Material
+        {
+        public:
+            QColor diffuseColor;
+            QColor ambientColor;
+            QColor specularColor;
+            QColor emissiveColor;
+            float shininess;
+            float transparency;
+        };
+    }
 }
 
 Q_DECLARE_METATYPE(Gui::PropertyEditor::Material)
@@ -3088,6 +3186,9 @@ QVariant PropertyMaterialItem::editorData(QWidget *editor) const
     val.diffuseColor = cb->color();
     return QVariant::fromValue<Material>(val);
 }
+#pragma endregion
+
+#pragma region PropertyMaterialListItem
 
 // --------------------------------------------------------------------
 
@@ -3553,6 +3654,9 @@ QVariant PropertyMaterialListItem::editorData(QWidget *editor) const
 
     return list;
 }
+#pragma endregion
+
+#pragma region PropertyFileItem
 
 // --------------------------------------------------------------------
 
@@ -3610,6 +3714,9 @@ QVariant PropertyFileItem::editorData(QWidget *editor) const
     Gui::FileChooser *fc = qobject_cast<Gui::FileChooser*>(editor);
     return QVariant(fc->fileName());
 }
+#pragma endregion
+
+#pragma region PropertyPathItem
 
 // --------------------------------------------------------------------
 
@@ -3662,6 +3769,9 @@ QVariant PropertyPathItem::editorData(QWidget *editor) const
     Gui::FileChooser *fc = qobject_cast<Gui::FileChooser*>(editor);
     return QVariant(fc->fileName());
 }
+#pragma endregion
+
+#pragma region PropertyTransientFileItem
 
 // --------------------------------------------------------------------
 
@@ -3713,6 +3823,9 @@ QVariant PropertyTransientFileItem::editorData(QWidget *editor) const
     Gui::FileChooser *fc = qobject_cast<Gui::FileChooser*>(editor);
     return QVariant(fc->fileName());
 }
+#pragma endregion
+
+#pragma region LinkSelection
 
 // ---------------------------------------------------------------
 
@@ -3738,6 +3851,9 @@ void LinkSelection::select()
                                   link.getSubName().c_str());
     this->deleteLater();
 }
+#pragma endregion
+
+#pragma region LinkLabel
 
 // ---------------------------------------------------------------
 
@@ -3847,6 +3963,9 @@ void LinkLabel::resizeEvent(QResizeEvent* e)
 {
     editButton->setFixedWidth(e->size().height());
 }
+#pragma endregion
+
+#pragma region PropertyLinkItem
 
 // --------------------------------------------------------------------
 
@@ -3930,6 +4049,9 @@ QVariant PropertyLinkItem::editorData(QWidget *editor) const
     LinkLabel *ll = static_cast<LinkLabel*>(editor);
     return ll->propertyLink();
 }
+#pragma endregion
+
+#pragma region PropertyLinkListItem
 
 // --------------------------------------------------------------------
 
@@ -3938,6 +4060,8 @@ PROPERTYITEM_SOURCE(Gui::PropertyEditor::PropertyLinkListItem)
 PropertyLinkListItem::PropertyLinkListItem()
 {
 }
+#pragma endregion
+
 
 // --------------------------------------------------------------------
 

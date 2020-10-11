@@ -66,8 +66,6 @@
 #include "PropertyView.h"
 #include <Gui/SpinBox.h>
 
-#include <Quarter/devices/Mouse.h>
-
 using namespace Gui::PropertyEditor;
 using namespace Gui::Dialog;
 
@@ -521,7 +519,7 @@ void PropertyItem::setPropertyValue(const QString& value)
         return;
 
     try {
-        Base::Console().Log( "Just Debugging here!" );
+        Base::Console().Message("Just Debugging here! \n");
         Gui::Command::runCommand(Gui::Command::App, cmd.c_str());
     }
     catch (Base::PyException &e) {
@@ -992,11 +990,15 @@ QVariant PropertyFloatItem::value(const App::Property* prop) const
 void PropertyFloatItem::setValue(const QVariant& value)
 {
     //if the item has an expression it issues the python code
-    if (!hasExpression()) {
+    if (!hasExpression()) 
+    {
         if (!value.canConvert(QVariant::Double))
             return;
+        
         double val = value.toDouble();
+        
         QString data = QString::fromLatin1("%1").arg(val,0,'f',decimals());
+     
         setPropertyValue(data);
     }
 }
@@ -1014,6 +1016,8 @@ QWidget* PropertyFloatItem::createEditor(QWidget* parent, const QObject* receive
         sb->setAutoApply(autoApply());
     }
 
+    Base::Console().Message("In Property Float Item! Find me here!\n");
+
     return sb;
 }
 
@@ -1022,12 +1026,6 @@ void PropertyFloatItem::setEditorData(QWidget *editor, const QVariant& data) con
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
     sb->setRange((double)INT_MIN, (double)INT_MAX);
     sb->setValue(data.toDouble());
-
-    // Start Sample code by gaggedegg
-
-    sb->stepUp();
-
-    // End Sample code by gaggedegg
 }
 
 QVariant PropertyFloatItem::editorData(QWidget *editor) const
@@ -1133,8 +1131,16 @@ void PropertyUnitConstraintItem::setEditorData(QWidget *editor, const QVariant& 
     const Base::Quantity& value = data.value<Base::Quantity>();
 
     Gui::QuantitySpinBox *infield = qobject_cast<Gui::QuantitySpinBox*>(editor);
+
     infield->setValue(value);
     infield->selectAll();
+
+
+    // Start Sample code by gaggedegg
+
+
+
+    // End Sample code by gaggedegg
 
     const App::PropertyQuantityConstraint* prop = static_cast
         <const App::PropertyQuantityConstraint*>(getFirstProperty());
@@ -1146,12 +1152,12 @@ void PropertyUnitConstraintItem::setEditorData(QWidget *editor, const QVariant& 
 
     if (c) {
         infield->setMinimum(c->LowerBound);
-        infield->setMaximum(79);
+        infield->setMaximum(c->UpperBound);
         infield->setSingleStep(c->StepSize);
     }
     else {
         infield->setMinimum((double)INT_MIN);
-        infield->setMaximum((double)79);
+        infield->setMaximum((double)INT_MAX);
     }
 }
 
@@ -1223,12 +1229,12 @@ void PropertyFloatConstraintItem::setEditorData(QWidget *editor, const QVariant&
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
     if (c) {
         sb->setMinimum(c->LowerBound);
-        sb->setMaximum(70);
+        sb->setMaximum(c->UpperBound);
         sb->setSingleStep(c->StepSize);
     }
     else {
         sb->setMinimum((double)INT_MIN);
-        sb->setMaximum((double)70);
+        sb->setMaximum((double)INT_MAX);
         sb->setSingleStep(0.1);
     }
     sb->setValue(data.toDouble());

@@ -825,11 +825,11 @@ void DoubleSpinBox::paintEvent(QPaintEvent*)
     p.drawComplexControl(QStyle::CC_SpinBox, opt);
 }
 
-void Gui::DoubleSpinBox::mouseSlideEvent( QMouseEvent *event )
+/*void Gui::DoubleSpinBox::mouseSlideEvent( QMouseEvent *event )
 {
     this->x = event->x();
     Q_EMIT mouseMovedSignal();
-}
+}*/
 #pragma endregion
 
 #include "moc_SpinBox.cpp"

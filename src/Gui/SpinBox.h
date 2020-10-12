@@ -139,7 +139,7 @@ private Q_SLOTS:
     void finishFormulaDialog();
     void openFormulaDialog();
     virtual void onChange();
-    void openMouseMovedDialog();
+    //void openMouseMovedDialog();
 };
 
 /**
@@ -162,15 +162,15 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
-    void mouseSlideEvent( QMouseEvent *event );
+    //void mouseSlideEvent( QMouseEvent *event );
 
 Q_SIGNALS:
-    void mouseMovedSignal();
+    //void mouseMovedSignal();
 
 private Q_SLOTS:
     void finishFormulaDialog();
     void openFormulaDialog();
-    void openMouseMovedDialog();
+    //void openMouseMovedDialog();
     virtual void onChange();
 
 private:

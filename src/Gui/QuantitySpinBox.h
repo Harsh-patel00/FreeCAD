@@ -143,6 +143,7 @@ namespace Gui
     protected Q_SLOTS:
         void userInput(const QString & text);
         void openFormulaDialog();
+        void openMouseDialog();
         void finishFormulaDialog();
         void handlePendingEmit();
         void handleMouseSlide();

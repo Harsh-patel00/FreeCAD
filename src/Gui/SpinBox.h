@@ -161,11 +161,18 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *event);
+    void mouseSlideEvent( QMouseEvent *event );
+
+Q_SIGNALS:
+    void mouseMovedSignal();
 
 private Q_SLOTS:
     void finishFormulaDialog();
     void openFormulaDialog();
     virtual void onChange();
+
+private:
+    int x;
 };
 
 } // namespace Gui

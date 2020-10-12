@@ -336,6 +336,9 @@ namespace Gui
             virtual void setEditorData(QWidget *editor, const QVariant& data) const;
             virtual QVariant editorData(QWidget *editor) const;
 
+            int currX = 0;
+            int prevX = 0;
+
         protected:
             virtual QVariant toString(const QVariant&) const;
             virtual QVariant value(const App::Property*) const;
@@ -1085,38 +1088,6 @@ namespace Gui
         };
 
         #pragma region GaggedeggCode
-
-        class MouseMoveDetect :QObject
-        {
-            Q_OBJECT
-
-        public:
-            MouseMoveDetect( QWidget *parent = nullptr );
-
-        public Q_SLOTS:
-            void MouseMoveAction();
-
-        private:
-            int prevX = 0;
-            int currX = 0;
-
-        };
-
-        class MouseMoveDetectSig: QObject
-        {
-            Q_OBJECT
-
-        public:
-            MouseMoveDetectSig( QWidget * );
-
-            void mouseMoveEvent( QMouseEvent *ev);
-
-        Q_SIGNALS:
-            void mouseMovedSignal();
-
-        private:
-            int x = 0;
-        };
 
         #pragma endregion // GaggedeggCode
 

@@ -680,17 +680,6 @@ QString PropertyItem::expressionAsString() const
 }
 
 #pragma region gaggedeggClass
-
-void Gui::PropertyEditor::MouseMoveDetectSig::mouseMoveEvent( QMouseEvent *ev )
-{
-    this->x = ev->x();
-    Q_EMIT mouseMovedSignal();
-}
-
-void Gui::PropertyEditor::MouseMoveDetect::MouseMoveAction()
-{
-    Base::Console().Message( "Mouse Moved!" );
-}
 #pragma endregion
 
 #pragma region PropertyStringItem

@@ -290,10 +290,8 @@ QuantitySpinBox::QuantitySpinBox(QWidget *parent)
 {
     d_ptr->locale = locale();
     this->setContextMenuPolicy(Qt::DefaultContextMenu);
-    QObject::connect(lineEdit(), SIGNAL(textChanged(QString)),
-                     this, SLOT(userInput(QString)));
-    QObject::connect(this, SIGNAL(editingFinished()),
-                     this, SLOT(handlePendingEmit()));
+    QObject::connect(lineEdit(), SIGNAL(textChanged(QString)), this, SLOT(userInput(QString)));
+    QObject::connect(this, SIGNAL(editingFinished()), this, SLOT(handlePendingEmit()));
 
     defaultPalette = lineEdit()->palette();
 
@@ -312,6 +310,7 @@ QuantitySpinBox::QuantitySpinBox(QWidget *parent)
     lineEdit()->setTextMargins(0, 2, 0, 2);
 
     QObject::connect(iconLabel, SIGNAL(clicked()), this, SLOT(openFormulaDialog()));
+    QObject::connect( this, SIGNAL( mouseSlided() ), this, SLOT( handleMouseSlide() ) );
 }
 
 QuantitySpinBox::~QuantitySpinBox()
@@ -413,7 +412,6 @@ QString Gui::QuantitySpinBox::expressionText() const
     return QString();
 }
 
-
 void Gui::QuantitySpinBox::onChange()
 {
     Q_ASSERT(isBound());
@@ -449,7 +447,6 @@ void Gui::QuantitySpinBox::onChange()
         iconLabel->setToolTip(QString());
     }
 }
-
 
 bool QuantitySpinBox::apply(const std::string & propName)
 {
@@ -528,6 +525,10 @@ void Gui::QuantitySpinBox::keyPressEvent(QKeyEvent *event)
 {
     if (event->text() == QString::fromUtf8("=") && isBound())
         openFormulaDialog();
+    else if (event->text() == QString::fromUtf8( "," ) && isBound())
+    {
+        Base::Console().Message( "Comma pressed!" );
+    }
     else
         QAbstractSpinBox::keyPressEvent(event);
 }
@@ -545,6 +546,12 @@ void Gui::QuantitySpinBox::paintEvent(QPaintEvent*)
 
     QStylePainter p(this);
     p.drawComplexControl(QStyle::CC_SpinBox, opt);
+}
+
+void Gui::QuantitySpinBox::mouseSlideEvent( QMouseEvent *event )
+{
+    this->x = event->x();
+    Q_EMIT mouseSlided();
 }
 
 void QuantitySpinBox::updateText(const Quantity &quant)
@@ -661,6 +668,16 @@ void QuantitySpinBox::finishFormulaDialog()
 void QuantitySpinBox::handlePendingEmit()
 {
     updateFromCache(true);
+}
+
+void QuantitySpinBox::handleMouseSlide()
+{
+    Base::Console().Message( "Mouse moved on spinBox" );
+    currX = x;
+    if(currX > prevX)
+        this->stepUp();
+    if (currX < prevX)
+        this->stepDown();
 }
 
 void QuantitySpinBox::updateFromCache(bool notify)

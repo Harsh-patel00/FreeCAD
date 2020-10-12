@@ -139,6 +139,7 @@ private Q_SLOTS:
     void finishFormulaDialog();
     void openFormulaDialog();
     virtual void onChange();
+    void openMouseMovedDialog();
 };
 
 /**
@@ -169,6 +170,7 @@ Q_SIGNALS:
 private Q_SLOTS:
     void finishFormulaDialog();
     void openFormulaDialog();
+    void openMouseMovedDialog();
     virtual void onChange();
 
 private:

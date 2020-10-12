@@ -47,6 +47,8 @@ using namespace Gui;
 using namespace App;
 using namespace Base;
 
+#pragma region UnsignedValidator
+
 UnsignedValidator::UnsignedValidator( QObject * parent )
   : QValidator( parent )
 {
@@ -100,45 +102,49 @@ void UnsignedValidator::setTop( uint top )
 {
     setRange( bottom(), top );
 }
+#pragma endregion
 
-namespace Gui {
-class UIntSpinBoxPrivate
+namespace Gui 
 {
-public:
-    UnsignedValidator * mValidator;
+    class UIntSpinBoxPrivate
+    {
+    public:
+        UnsignedValidator * mValidator;
 
-    UIntSpinBoxPrivate() : mValidator(0)
-    {
-    }
-    uint mapToUInt( int v ) const
-    {
-        uint ui;
-        if ( v == INT_MIN ) {
-            ui = 0;
-        } else if ( v == INT_MAX ) {
-            ui = UINT_MAX;
-        } else if ( v < 0 ) {
-            v -= INT_MIN; ui = (uint)v;
-        } else {
-            ui = (uint)v; ui -= INT_MIN;
-        } return ui;
-    }
-    int mapToInt( uint v ) const
-    {
-        int in;
-        if ( v == UINT_MAX ) {
-            in = INT_MAX;
-        } else if ( v == 0 ) {
-            in = INT_MIN;
-        } else if ( v > INT_MAX ) {
-            v += INT_MIN; in = (int)v;
-        } else {
-            in = v; in += INT_MIN;
-        } return in;
-    }
-};
+        UIntSpinBoxPrivate() : mValidator(0)
+        {
+        }
+        uint mapToUInt( int v ) const
+        {
+            uint ui;
+            if ( v == INT_MIN ) {
+                ui = 0;
+            } else if ( v == INT_MAX ) {
+                ui = UINT_MAX;
+            } else if ( v < 0 ) {
+                v -= INT_MIN; ui = (uint)v;
+            } else {
+                ui = (uint)v; ui -= INT_MIN;
+            } return ui;
+        }
+        int mapToInt( uint v ) const
+        {
+            int in;
+            if ( v == UINT_MAX ) {
+                in = INT_MAX;
+            } else if ( v == 0 ) {
+                in = INT_MIN;
+            } else if ( v > INT_MAX ) {
+                v += INT_MIN; in = (int)v;
+            } else {
+                in = v; in += INT_MIN;
+            } return in;
+        }
+    };
 
 } // namespace Gui
+
+#pragma region UIntSpinBox
 
 UIntSpinBox::UIntSpinBox (QWidget* parent)
   : QSpinBox (parent)
@@ -307,7 +313,6 @@ void UIntSpinBox::onChange() {
     }
 }
 
-
 bool UIntSpinBox::apply(const std::string & propName)
 {
     if (!ExpressionBinding::apply(propName)) {
@@ -427,7 +432,11 @@ void UIntSpinBox::paintEvent(QPaintEvent*)
     p.drawComplexControl(QStyle::CC_SpinBox, opt);
 }
 
+#pragma endregion
+
 // ----------------------------------------------------------------------------
+
+#pragma region IntSpinBox
 
 IntSpinBox::IntSpinBox(QWidget* parent) : QSpinBox(parent) {
 
@@ -620,7 +629,12 @@ void IntSpinBox::paintEvent(QPaintEvent*)
     p.drawComplexControl(QStyle::CC_SpinBox, opt);
 }
 
+#pragma endregion
+
 // ----------------------------------------------------------------------------
+
+#pragma region DoubleSpinBox
+
 
 DoubleSpinBox::DoubleSpinBox(QWidget* parent): QDoubleSpinBox(parent) {
 
@@ -644,7 +658,6 @@ DoubleSpinBox::DoubleSpinBox(QWidget* parent): QDoubleSpinBox(parent) {
 DoubleSpinBox::~DoubleSpinBox() {
 
 }
-
 
 bool DoubleSpinBox::apply(const std::string& propName) {
     
@@ -817,5 +830,6 @@ void Gui::DoubleSpinBox::mouseSlideEvent( QMouseEvent *event )
     this->x = event->x();
     Q_EMIT mouseMovedSignal();
 }
+#pragma endregion
 
 #include "moc_SpinBox.cpp"

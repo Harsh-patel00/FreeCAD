@@ -42,7 +42,7 @@
 #include <Mod/Part/Gui/ViewProvider.h>
 
 #include "TaskFilling.h"
-#include "TaskFillingUnbound.h"
+#include "TaskFillingEdge.h"
 #include "TaskFillingVertex.h"
 #include "ui_TaskFilling.h"
 
@@ -275,6 +275,9 @@ FillingPanel::FillingPanel(ViewProviderFilling* vp, Surface::Filling* obj)
     ui->listBoundary->addAction(action);
     connect(action, SIGNAL(triggered()), this, SLOT(onDeleteEdge()));
     ui->listBoundary->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+    connect(ui->listBoundary->model(),
+        SIGNAL(rowsMoved(QModelIndex, int, int, QModelIndex, int)), this, SLOT(onIndexesMoved()));
 }
 
 /*
@@ -379,6 +382,11 @@ void FillingPanel::open()
     this->vp->highlightReferences(ViewProviderFilling::Face, links, true);
 
     Gui::Selection().clearSelection();
+
+    // if the surface is not yet created then automatically start "AppendEdge" mode
+    if (editedObject->Shape.getShape().isNull()) {
+        on_buttonEdgeAdd_clicked();
+    }
 }
 
 void FillingPanel::clearSelection()
@@ -744,6 +752,42 @@ void FillingPanel::onDeleteEdge()
     }
 }
 
+void FillingPanel::onIndexesMoved()
+{
+    QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
+    if (!model)
+        return;
+
+    std::vector<App::DocumentObject*> objects;
+    std::vector<std::string> element;
+    std::vector<std::string> faces;
+    std::vector<long> order;
+
+    int rows = model->rowCount();
+    for (int i = 0; i < rows; i++) {
+        QModelIndex index = model->index(i, 0);
+        QList<QVariant> data;
+        data = index.data(Qt::UserRole).toList();
+
+        App::Document* doc = App::GetApplication().getDocument(data[0].toByteArray());
+        App::DocumentObject* obj = doc ? doc->getObject(data[1].toByteArray()) : nullptr;
+        std::string sub = data[2].toByteArray().constData();
+        std::string face = data[3].toByteArray().constData();
+        long cont = data[4].toInt();
+
+        objects.push_back(obj);
+        element.push_back(sub);
+
+        faces.push_back(face);
+        order.push_back(cont);
+    }
+
+    editedObject->BoundaryEdges.setValues(objects, element);
+    editedObject->BoundaryFaces.setValues(faces);
+    editedObject->BoundaryOrder.setValues(order);
+    editedObject->recomputeFeature();
+}
+
 void FillingPanel::on_buttonAccept_clicked()
 {
     QListWidgetItem* item = ui->listBoundary->currentItem();
@@ -824,7 +868,7 @@ TaskFilling::TaskFilling(ViewProviderFilling* vp, Surface::Filling* obj)
     Content.push_back(taskbox1);
 
     // second task box
-    widget2 = new FillingUnboundPanel(vp, obj);
+    widget2 = new FillingEdgePanel(vp, obj);
     Gui::TaskView::TaskBox* taskbox2 = new Gui::TaskView::TaskBox(
         QPixmap(), widget2->windowTitle(), true, 0);
     taskbox2->groupLayout()->addWidget(widget2);

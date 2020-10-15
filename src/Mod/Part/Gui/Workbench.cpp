@@ -154,11 +154,9 @@ Gui::MenuItem* Workbench::setupMenuBar() const
              << "Part_Measure_Refresh"
              << "Part_Measure_Clear_All"
              << "Part_Measure_Toggle_All"
-             << "Part_Measure_Toggle_3d"
+             << "Part_Measure_Toggle_3D"
              << "Part_Measure_Toggle_Delta";
 
-    // leave this for 0.14 until #0000477 is fixed
-#if 0
     Gui::MenuItem* view = root->findItem("&View");
     if (view) {
         Gui::MenuItem* appr = view->findItem("Std_RandomColor");
@@ -167,7 +165,6 @@ Gui::MenuItem* Workbench::setupMenuBar() const
         face->setCommand("Part_ColorPerFace");
         view->insertItem(appr, face);
     }
-#endif
 
     return root;
 }
@@ -199,7 +196,8 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
           << "Part_Sweep"
           << "Part_CompOffset"
           << "Part_Thickness"
-          << "Part_ProjectionOnSurface";
+          << "Part_ProjectionOnSurface"
+          << "Part_ColorPerFace";  // See issues #0477 and #1954 in the tracker
 
     Gui::ToolBarItem* boolop = new Gui::ToolBarItem(root);
     boolop->setCommand("Boolean");
@@ -223,7 +221,7 @@ Gui::ToolBarItem* Workbench::setupToolBars() const
              << "Part_Measure_Refresh"
              << "Part_Measure_Clear_All"
              << "Part_Measure_Toggle_All"
-             << "Part_Measure_Toggle_3d"
+             << "Part_Measure_Toggle_3D"
              << "Part_Measure_Toggle_Delta";
 
     return root;

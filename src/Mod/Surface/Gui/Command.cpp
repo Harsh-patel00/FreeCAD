@@ -63,7 +63,6 @@
 #include <App/PropertyLinks.h>
 #include "Mod/Part/App/PartFeature.h"
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //===========================================================================
 // CmdSurfaceCut THIS IS THE SURFACE CUT COMMAND
@@ -76,11 +75,12 @@ CmdSurfaceCut::CmdSurfaceCut()
     sAppModule    = "Surface";
     sGroup        = QT_TR_NOOP("Surface");
     sMenuText     = QT_TR_NOOP("Surface Cut function");
-    sToolTipText  = QT_TR_NOOP("Cuts a Shape with another Shape.\nReturns a modified version of the first shape");
+    sToolTipText  = QT_TR_NOOP("Cuts a shape with another Shape.\n"
+                               "It returns a modified version of the first shape");
     sWhatsThis    = "Surface_Cut";
-    sStatusTip    = QT_TR_NOOP("Surface Cut function");
+    sStatusTip    = sToolTipText;
     sPixmap       = "Surface_Cut";
-    sAccel        = "CTRL+H";
+    // sAccel        = "CTRL+H";
 }
 
 void CmdSurfaceCut::activated(int iMsg)
@@ -134,8 +134,10 @@ CmdSurfaceFilling::CmdSurfaceFilling()
     sAppModule    = "Surface";
     sGroup        = QT_TR_NOOP("Surface");
     sMenuText     = QT_TR_NOOP("Filling...");
-    sToolTipText  = QT_TR_NOOP("Fills a series of boundary curves, constraint curves and vertexes with a surface");
-    sStatusTip    = QT_TR_NOOP("Fills a series of boundary curves, constraint curves and vertexes with a surface");
+    sToolTipText  = QT_TR_NOOP("Creates a surface from a series of picked boundary edges.\n"
+                               "Optionally, the surface may be constrained by non-boundary edges\n"
+                               "and vertices, to determine its curvature.");
+    sStatusTip    = sToolTipText;
     sWhatsThis    = "Surface_Filling";
     sPixmap       = "Surface_Filling";
 }
@@ -166,7 +168,7 @@ CmdSurfaceGeomFillSurface::CmdSurfaceGeomFillSurface()
     sAppModule    = "Surface";
     sGroup        = QT_TR_NOOP("Surface");
     sMenuText     = QT_TR_NOOP("Fill boundary curves");
-    sToolTipText  = QT_TR_NOOP("Creates a surface from two, three or four boundary edges");
+    sToolTipText  = QT_TR_NOOP("Creates a surface from two, three or four boundary edges.");
     sWhatsThis    = "Surface_GeomFillSurface";
     sStatusTip    = sToolTipText;
     sPixmap       = "Surface_BSplineSurface";
@@ -196,9 +198,18 @@ CmdSurfaceCurveOnMesh::CmdSurfaceCurveOnMesh()
     sAppModule    = "MeshPart";
     sGroup        = QT_TR_NOOP("Surface");
     sMenuText     = QT_TR_NOOP("Curve on mesh...");
-    sToolTipText  = QT_TR_NOOP("Curve on mesh");
+    sToolTipText  = QT_TR_NOOP("Creates an approximated curve on top of the selected mesh.\n"
+                               "Press 'Start', then pick points on the mesh; "
+                               "when enough points have been set,\n"
+                               "right-click and choose 'Create'.\n"
+                               "\n"
+                               "This command only works with a 'mesh' object, "
+                               "not a regular face or surface.\n"
+                               "To convert an object to a mesh "
+                               "use the tools of the Mesh Workbench.");
     sWhatsThis    = "Surface_CurveOnMesh";
     sStatusTip    = sToolTipText;
+    sPixmap       = "Surface_CurveOnMesh";
 }
 
 void CmdSurfaceCurveOnMesh::activated(int)
@@ -229,9 +240,11 @@ CmdSurfaceExtendFace::CmdSurfaceExtendFace()
     sAppModule    = "Surface";
     sGroup        = QT_TR_NOOP("Surface");
     sMenuText     = QT_TR_NOOP("Extend face");
-    sToolTipText  = QT_TR_NOOP("Extend face");
+    sToolTipText  = QT_TR_NOOP("Extrapolates the selected face or surface at its boundaries\n"
+                               "with its local U and V parameters.");
     sWhatsThis    = "Surface_ExtendFace";
     sStatusTip    = sToolTipText;
+    sPixmap       = "Surface_Extend";
 }
 
 void CmdSurfaceExtendFace::activated(int)
@@ -269,8 +282,8 @@ CmdSurfaceSections::CmdSurfaceSections()
     sAppModule    = "Surface";
     sGroup        = QT_TR_NOOP("Surface");
     sMenuText     = QT_TR_NOOP("Sections...");
-    sToolTipText  = QT_TR_NOOP("Creates a surface from a series of section curves");
-    sStatusTip    = QT_TR_NOOP("Creates a surface from a series of section curves");
+    sToolTipText  = QT_TR_NOOP("Creates a surface from a series of sectional edges.");
+    sStatusTip    = sToolTipText;
     sWhatsThis    = "Surface_Sections";
     sPixmap       = "Surface_Sections";
 }
@@ -293,11 +306,12 @@ bool CmdSurfaceSections::isActive(void)
 void CreateSurfaceCommands(void)
 {
     Gui::CommandManager &rcCmdMgr = Gui::Application::Instance->commandManager();
-/*  rcCmdMgr.addCommand(new CmdSurfaceFilling());
-    rcCmdMgr.addCommand(new CmdSurfaceCut());*/
+/*
+    rcCmdMgr.addCommand(new CmdSurfaceCut());
+*/
     rcCmdMgr.addCommand(new CmdSurfaceFilling());
     rcCmdMgr.addCommand(new CmdSurfaceGeomFillSurface());
-    rcCmdMgr.addCommand(new CmdSurfaceCurveOnMesh());
-    rcCmdMgr.addCommand(new CmdSurfaceExtendFace());
     rcCmdMgr.addCommand(new CmdSurfaceSections());
+    rcCmdMgr.addCommand(new CmdSurfaceExtendFace());
+    rcCmdMgr.addCommand(new CmdSurfaceCurveOnMesh());
 }

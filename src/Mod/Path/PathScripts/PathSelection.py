@@ -107,15 +107,21 @@ class CHAMFERGate(PathBaseGate):
         if math.fabs(shape.Volume) < 1e-9 and len(shape.Wires) > 0:
             return True
 
-        if 'Edge' == shape.ShapeType or 'Face' == shape.ShapeType:
+        if shape.ShapeType == 'Edge':
             return True
+
+        if (shape.ShapeType == 'Face'
+                and shape.normalAt(0,0) == FreeCAD.Vector(0,0,1)):
+           return True
 
         if sub:
             subShape = shape.getElement(sub)
-            if 'Edge' == subShape.ShapeType or 'Face' == subShape.ShapeType:
+            if subShape.ShapeType == 'Edge':
+                return True
+            elif (subShape.ShapeType == 'Face'
+                    and subShape.normalAt(0,0) == FreeCAD.Vector(0,0,1)):
                 return True
 
-        print(shape.ShapeType)
         return False
 
 
@@ -260,6 +266,15 @@ class PROBEGate:
     def allow(self, doc, obj, sub):
         pass
 
+class TURNGate(PathBaseGate):
+    def allow(self, doc, obj, sub): # pylint: disable=unused-argument
+        PathLog.debug('obj: {} sub: {}'.format(obj, sub))
+        if hasattr(obj, "Shape") and sub:
+            shape = obj.Shape
+            subobj = shape.getElement(sub)
+            return PathUtils.isDrillable(shape, subobj, includePartials=True)
+        else:
+            return False
 
 class ALLGate(PathBaseGate):
     def allow(self, doc, obj, sub): # pylint: disable=unused-argument
@@ -340,6 +355,10 @@ def probeselect():
 def customselect():
     FreeCAD.Console.PrintWarning("Custom Select Mode\n")
 
+def turnselect():
+    FreeCADGui.Selection.addSelectionGate(TURNGate())
+    FreeCAD.Console.PrintWarning("Turning Select Mode\n")
+
 
 
 def select(op):
@@ -363,6 +382,8 @@ def select(op):
     opsel['Vcarve'] = vcarveselect
     opsel['Probe'] = probeselect
     opsel['Custom'] = customselect
+    opsel['TurnFace'] = turnselect
+    opsel['TurnProfile'] = turnselect
     return opsel[op]
 
 

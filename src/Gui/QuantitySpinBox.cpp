@@ -55,6 +55,7 @@
 #include <sstream>
 #include <boost/math/special_functions/round.hpp>
 
+
 using namespace Gui;
 using namespace App;
 using namespace Base;
@@ -292,7 +293,12 @@ QuantitySpinBox::QuantitySpinBox(QWidget *parent) : QAbstractSpinBox(parent),
     QObject::connect(lineEdit(), SIGNAL(textChanged(QString)), this, SLOT(userInput(QString)));
     QObject::connect(this, SIGNAL(editingFinished()), this, SLOT(handlePendingEmit()));
     this->setMouseTracking( true );
-    Base::Console().Message( "Created a QuantitySpinBox!" );
+    this->setAttribute( Qt::WA_Hover );
+    Base::Console().Message( "Created a QuantitySpinBox!\n" );
+    if (this->hasMouseTracking())
+    {
+        Base::Console().Message( "Mouse Tracking is enabled!\n" );
+    }
 
     defaultPalette = lineEdit()->palette();
 
@@ -311,7 +317,6 @@ QuantitySpinBox::QuantitySpinBox(QWidget *parent) : QAbstractSpinBox(parent),
     lineEdit()->setTextMargins(0, 2, 0, 2);
 
     QObject::connect(iconLabel, SIGNAL(clicked()), this, SLOT(openFormulaDialog()));
-    QObject::connect( this, SIGNAL( mouseSlided() ), this, SLOT( handleMouseSlide() ) );
 }
 
 QuantitySpinBox::~QuantitySpinBox()
@@ -526,11 +531,6 @@ void Gui::QuantitySpinBox::keyPressEvent(QKeyEvent *event)
 {
     if (event->text() == QString::fromUtf8("=") && isBound())
         openFormulaDialog();
-    else if (event->text() == QString::fromUtf8( "," ) && isBound())
-    {
-        Base::Console().Message( "Comma pressed!" );
-        openMouseDialog();
-    }
     else
         QAbstractSpinBox::keyPressEvent(event);
 }
@@ -548,12 +548,6 @@ void Gui::QuantitySpinBox::paintEvent(QPaintEvent*)
 
     QStylePainter p(this);
     p.drawComplexControl(QStyle::CC_SpinBox, opt);
-}
-
-void Gui::QuantitySpinBox::mouseSlideEvent( QMouseEvent *event )
-{
-    this->x = event->x();
-    Q_EMIT mouseSlided();
 }
 
 void QuantitySpinBox::updateText(const Quantity &quant)
@@ -649,22 +643,6 @@ void QuantitySpinBox::openFormulaDialog()
     Q_EMIT showFormulaDialog(true);
 }
 
-void Gui::QuantitySpinBox::openMouseDialog()
-{
-    Q_ASSERT( isBound() );
-
-    Q_D( const QuantitySpinBox );
-    Gui::Dialog::DlgExpressionInput *box = new Gui::Dialog::DlgExpressionInput( getPath(), getExpression(), d->unit, this );
-    connect( box, SIGNAL( finished( int ) ), this, SLOT( finishFormulaDialog() ) );
-    box->show();
-
-    QPoint pos = mapToGlobal( QPoint( 0, 0 ) );
-    box->move( pos - box->expressionPosition() );
-    box->setExpressionInputSize( width(), height() );
-
-    Q_EMIT showFormulaDialog( true );
-}
-
 void QuantitySpinBox::finishFormulaDialog()
 {
     Gui::Dialog::DlgExpressionInput* box = qobject_cast<Gui::Dialog::DlgExpressionInput*>(sender());
@@ -686,16 +664,6 @@ void QuantitySpinBox::finishFormulaDialog()
 void QuantitySpinBox::handlePendingEmit()
 {
     updateFromCache(true);
-}
-
-void QuantitySpinBox::handleMouseSlide()
-{
-    Base::Console().Message( "Mouse moved on spinBox" );
-    currX = x;
-    if(currX > prevX)
-        this->stepUp();
-    if (currX < prevX)
-        this->stepDown();
 }
 
 void QuantitySpinBox::updateFromCache(bool notify)

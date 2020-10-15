@@ -1013,8 +1013,6 @@ QWidget* PropertyFloatItem::createEditor(QWidget* parent, const QObject* receive
     sb->setDecimals(decimals());
     sb->setReadOnly(isReadOnly());
     QObject::connect(sb, SIGNAL(valueChanged(double)), receiver, method);
-    QObject::connect(sb, SIGNAL(MouseMoveDetectSig::mouseMovedSignal()), sb, SLOT(MouseMoveDetect::MouseMoveAction()));
-
 
     if (isBound()) {
         sb->bind(getPath());
@@ -1027,7 +1025,7 @@ QWidget* PropertyFloatItem::createEditor(QWidget* parent, const QObject* receive
 void PropertyFloatItem::setEditorData(QWidget *editor, const QVariant& data) const
 {
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
-    QObject::connect( sb, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), sb, SLOT( MouseMoveDetect::MouseMoveAction() ) );
+    //QObject::connect( sb, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), sb, SLOT( MouseMoveDetect::MouseMoveAction() ) );
 
     sb->setRange((double)INT_MIN, (double)INT_MAX);
     sb->setValue(data.toDouble());
@@ -1036,9 +1034,6 @@ void PropertyFloatItem::setEditorData(QWidget *editor, const QVariant& data) con
 QVariant PropertyFloatItem::editorData(QWidget *editor) const
 {
     QDoubleSpinBox *sb = qobject_cast<QDoubleSpinBox*>(editor);
-
-    QObject::connect( sb, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), sb, SLOT( MouseMoveDetect::MouseMoveAction() ) );
-
     return QVariant(sb->value());
 }
 
@@ -1089,7 +1084,6 @@ void PropertyUnitItem::setValue(const QVariant& value)
 QWidget* PropertyUnitItem::createEditor(QWidget* parent, const QObject* receiver, const char* method) const
 {
     Gui::QuantitySpinBox *infield = new Gui::QuantitySpinBox(parent);
-
     infield->setFrame(false);
     infield->setMinimumHeight(0);
     infield->setReadOnly(isReadOnly());
@@ -1100,10 +1094,7 @@ QWidget* PropertyUnitItem::createEditor(QWidget* parent, const QObject* receiver
         infield->setAutoApply(autoApply());
     }
 
-    
     QObject::connect(infield, SIGNAL(valueChanged(double)), receiver, method);
-    QObject::connect( infield, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), infield, SLOT( MouseMoveDetect::MouseMoveAction() ) );
-
     return infield;
 }
 
@@ -1112,8 +1103,6 @@ void PropertyUnitItem::setEditorData(QWidget *editor, const QVariant& data) cons
     const Base::Quantity& value = data.value<Base::Quantity>();
 
     Gui::QuantitySpinBox *infield = qobject_cast<Gui::QuantitySpinBox*>(editor);
-    QObject::connect( infield, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), infield, SLOT( MouseMoveDetect::MouseMoveAction() ) );
-
     infield->setValue(value);
     infield->selectAll();
 }
@@ -1122,7 +1111,6 @@ QVariant PropertyUnitItem::editorData(QWidget *editor) const
 {
     Gui::QuantitySpinBox *infield = qobject_cast<Gui::QuantitySpinBox*>(editor);
     Base::Quantity value = infield->value();
-    QObject::connect( infield, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), infield, SLOT( MouseMoveDetect::MouseMoveAction() ) );
     return QVariant::fromValue<Base::Quantity>(value);
 }
 
@@ -1145,9 +1133,6 @@ void PropertyUnitConstraintItem::setEditorData(QWidget *editor, const QVariant& 
     const Base::Quantity& value = data.value<Base::Quantity>();
 
     Gui::QuantitySpinBox *infield = qobject_cast<Gui::QuantitySpinBox*>(editor);
-    QObject::connect( infield, SIGNAL( MouseMoveDetectSig::mouseMovedSignal() ), infield, SLOT( MouseMoveDetect::MouseMoveAction() ) );
-
-
     infield->setValue(value);
     infield->selectAll();
 

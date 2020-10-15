@@ -386,6 +386,7 @@ void ActionGroup::onActivated (QAction* a)
 void ActionGroup::onHovered (QAction *a) 
 {
     Gui::ToolTip::showText(QCursor::pos(), a->toolTip());
+    Base::Console().Message( "Mouse Hovered over something!!\n" );
 }
 
 

@@ -129,6 +129,9 @@ namespace Gui
         QSize sizeHint() const;
         QSize minimumSizeHint() const;
         bool event(QEvent *event);
+        
+        bool eventFilter( QObject *object, QEvent *event );
+        
 
         void setExpression(boost::shared_ptr<App::Expression> expr);
         void bind(const App::ObjectIdentifier &_path);
@@ -143,10 +146,8 @@ namespace Gui
     protected Q_SLOTS:
         void userInput(const QString & text);
         void openFormulaDialog();
-        void openMouseDialog();
         void finishFormulaDialog();
         void handlePendingEmit();
-        void handleMouseSlide();
 
         //get notified on expression change
         virtual void onChange();
@@ -161,7 +162,6 @@ namespace Gui
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void resizeEvent(QResizeEvent *event);
         virtual void paintEvent(QPaintEvent *event);
-        virtual void mouseSlideEvent(QMouseEvent *event);
 
     private:
         void updateText(const Base::Quantity&);
@@ -190,10 +190,7 @@ namespace Gui
          *  or finished (false).
          */
         void showFormulaDialog(bool);
-        /// <summary>
-        /// Gets emitted when the user slides over the spinBox from left to right.
-        /// </summary>
-        void mouseSlided();
+
 
     private:
         QScopedPointer<QuantitySpinBoxPrivate> d_ptr;

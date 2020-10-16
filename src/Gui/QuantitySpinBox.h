@@ -128,14 +128,13 @@ namespace Gui
 
         QSize sizeHint() const;
         QSize minimumSizeHint() const;
-        bool event(QEvent *event);
-        
-        bool eventFilter( QObject *object, QEvent *event );
-        
+        bool event(QEvent *event);        
 
         void setExpression(boost::shared_ptr<App::Expression> expr);
         void bind(const App::ObjectIdentifier &_path);
         bool apply(const std::string &propName);
+
+        //void 
 
     public Q_SLOTS:
         /// Sets the field with a quantity
@@ -162,14 +161,13 @@ namespace Gui
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void resizeEvent(QResizeEvent *event);
         virtual void paintEvent(QPaintEvent *event);
+        virtual void mousePressEvent( QMouseEvent *event ) override;
 
     private:
         void updateText(const Base::Quantity&);
         void updateFromCache(bool);
         QString getUserString(const Base::Quantity& val, double& factor, QString& unitString) const;
         QString getUserString(const Base::Quantity& val) const;
-        int currX = 0;
-        int prevX = 0;
 
     Q_SIGNALS:
         /** Gets emitted if the user has entered a VALID input
@@ -197,6 +195,8 @@ namespace Gui
         Q_DISABLE_COPY( QuantitySpinBox )
         Q_DECLARE_PRIVATE( QuantitySpinBox )
         int x; // To track the position of mouse on spinBox area
+        int currX = 0; // Tracks current X pos of mouse
+        int prevX = 0; // Stores previous X pos of mouse
     };
 
 } // namespace Gui

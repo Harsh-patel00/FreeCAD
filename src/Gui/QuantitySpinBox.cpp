@@ -299,6 +299,13 @@ QuantitySpinBox::QuantitySpinBox(QWidget *parent) : QAbstractSpinBox(parent),
     {
         Base::Console().Message( "Mouse Tracking is enabled!\n" );
     }
+    if (this->hasFrame())
+    {
+        Base::Console().Message( "This spin box has frame!\n" );
+    }
+
+
+
 
     defaultPalette = lineEdit()->palette();
 
@@ -548,6 +555,19 @@ void Gui::QuantitySpinBox::paintEvent(QPaintEvent*)
 
     QStylePainter p(this);
     p.drawComplexControl(QStyle::CC_SpinBox, opt);
+}
+
+void Gui::QuantitySpinBox::mousePressEvent( QMouseEvent *event )
+{
+    if (event->button() == Qt::MouseButton::LeftButton)
+    {
+        Base::Console().Message( "Mouse Left Button pressed\n" );
+    }
+    else
+    {
+        Base::Console().Message( "In else\n" );
+        QAbstractSpinBox::mousePressEvent( event );
+    }
 }
 
 void QuantitySpinBox::updateText(const Quantity &quant)

@@ -134,8 +134,6 @@ namespace Gui
         void bind(const App::ObjectIdentifier &_path);
         bool apply(const std::string &propName);
 
-        //void 
-
     public Q_SLOTS:
         /// Sets the field with a quantity
         void setValue(const Base::Quantity& val);
@@ -161,7 +159,6 @@ namespace Gui
         virtual void keyPressEvent(QKeyEvent *event);
         virtual void resizeEvent(QResizeEvent *event);
         virtual void paintEvent(QPaintEvent *event);
-        virtual void mousePressEvent( QMouseEvent *event ) override;
 
     private:
         void updateText(const Base::Quantity&);
@@ -194,9 +191,6 @@ namespace Gui
         QScopedPointer<QuantitySpinBoxPrivate> d_ptr;
         Q_DISABLE_COPY( QuantitySpinBox )
         Q_DECLARE_PRIVATE( QuantitySpinBox )
-        int x; // To track the position of mouse on spinBox area
-        int currX = 0; // Tracks current X pos of mouse
-        int prevX = 0; // Stores previous X pos of mouse
     };
 
 } // namespace Gui

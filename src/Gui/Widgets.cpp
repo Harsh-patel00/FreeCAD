@@ -223,6 +223,7 @@ void ActionSelector::setSelectedLabel(const QString& label)
 
 QString ActionSelector::selectedLabel() const
 {
+    Console().Message("Label selected (Widgets.cpp)\n");
     return labelSelected->text();
 }
 
@@ -235,7 +236,6 @@ QString ActionSelector::availableLabel() const
 {
     return labelAvailable->text();
 }
-
 
 void ActionSelector::retranslateUi()
 {

@@ -99,6 +99,9 @@ DlgPropertyLink::DlgPropertyLink(QWidget* parent)
 
     refreshButton = ui->buttonBox->addButton(tr("Reset"), QDialogButtonBox::ActionRole);
     resetButton = ui->buttonBox->addButton(tr("Clear"), QDialogButtonBox::ResetRole);
+
+    Base::Console().Message("In DlgPropertyLinkConstructor!\n");
+
 }
 
 /**
